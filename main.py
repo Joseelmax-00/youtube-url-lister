@@ -8,8 +8,23 @@ import json
 
 from config import YOUTUBE_API_KEY
 
+YOUTUBE_API_KEY = st.secrets["YOUTUBE_API_KEY"]
 
 def get_video_urls_from_channel(channel_input, api_key=YOUTUBE_API_KEY):
+    """
+    Fetches all the video URLs from a given YouTube channel.
+
+    Parameters:
+    - channel_input: The URL or ID of a YouTube channel.
+    - api_key: The API key for accessing the YouTube Data API v3. If not provided, it defaults to the YOUTUBE_API_KEY environment variable.
+
+    Returns:
+    - :(list, str/None) A tuple containing -a list of video URLs and -an error string. If no error occurred, the error string is None.
+
+    Errors:
+    - If the channel_input is not a valid YouTube channel URL or ID, an error string is returned.
+    - If an HTTP error occurs when accessing the YouTube Data API, an error string is returned.
+    """
     youtube = build('youtube', 'v3', developerKey=api_key)
     
     if channel_input.startswith('@'):
