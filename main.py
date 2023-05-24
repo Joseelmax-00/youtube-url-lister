@@ -8,7 +8,6 @@ import json
 
 from config import YOUTUBE_API_KEY
 
-YOUTUBE_API_KEY = st.secrets["YOUTUBE_API_KEY"]
 
 def get_video_urls_from_channel(channel_input, api_key=YOUTUBE_API_KEY):
     """
