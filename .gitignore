@@ -117,3 +117,6 @@ ENV/
 
 # pipenv
 Pipfile.lock
+
+secrets.toml
+.streamlit/secrets.toml

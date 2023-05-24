@@ -1,8 +1,3 @@
-from dotenv import load_dotenv
-import os
+import streamlit as st
 
-# Load variables from .env
-load_dotenv('config.env')
-
-# Get API key
-YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')
+YOUTUBE_API_KEY = st.secrets["YOUTUBE_API_KEY"]["value"]
