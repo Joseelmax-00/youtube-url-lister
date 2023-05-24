@@ -4,11 +4,12 @@ from googleapiclient.errors import HttpError
 import re
 import requests
 from bs4 import BeautifulSoup
+import json
 
 from config import YOUTUBE_API_KEY
 
 
-def get_video_urls_from_channel(channel_input, api_key):
+def get_video_urls_from_channel(channel_input, api_key=YOUTUBE_API_KEY):
     youtube = build('youtube', 'v3', developerKey=api_key)
     
     if channel_input.startswith('@'):
@@ -29,7 +30,7 @@ def get_video_urls_from_channel(channel_input, api_key):
         if canonical_link:
             channel_id = canonical_link['href'].split('/')[-1]
         else:
-            return None, 'Could not extract channel ID'
+            return None, "Could not extract channel ID. It's possible you entered an ID that doesn't exist. If this is not the case it's likely caused by an update on Youtube's part."
 
     video_urls = []
     page_token = None
@@ -54,14 +55,19 @@ def get_video_urls_from_channel(channel_input, api_key):
                 break
 
         except HttpError as e:
-            print(f'An HTTP error {e.resp.status} occurred:\n{e.content}')
-            break  # Stop retrieving videos if an error occurs
+            error_content = json.loads(e.content)
+            error_message = error_content.get('error', {}).get('message', '')
+            if e.resp.status == 403:
+                return None, "Request cannot be completed. Daily quota exceeded. Please try again later."
+            else:
+                return None, f"An HTTP error {e.resp.status} occurred: {error_message}. Please try again later."
 
     return video_urls, None  # No error
 
-channel_input = st.text_input('Enter Youtube channel URL or ID')
+
+channel_input = st.text_input('Enter Youtube channel URL or ID').strip()
 if channel_input:
-    video_list, error = get_video_urls_from_channel(channel_input, API_KEY)
+    video_list, error = get_video_urls_from_channel(channel_input)
     if error:
         st.error(error)
     else:
